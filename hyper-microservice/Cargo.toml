@@ -1,0 +1,14 @@
+[package]
+name = "hyper-microservice"
+version = "0.1.0"
+authors = ["Atul Sharma <asharma@sw-at.com>"]
+edition = "2018"
+
+[dependencies]
+log = "0.4"
+hyper ="0.12"
+pretty_env_logger = "0.3.0"
+futures = "0.1" 
+slab = "0.4"
+lazy_static = "1.0"
+regex = "1.0"
