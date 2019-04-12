@@ -1,7 +1,0 @@
-[package]
-name = "basic_types"
-version = "0.1.0"
-authors = ["Atul Sharma <asharma@sw-at.com>"]
-edition = "2018"
-
-[dependencies]
