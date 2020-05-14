@@ -107,6 +107,22 @@ pub fn run_simulation(){
         // l is distance to next floor
         let l = (location - (next_floor as f64) * floor_height).abs();        
 
+        //Three cases to consider
+        //1. if we are in decelaration range - we should slow down
+        //2. if not in decelaration range and not max velocity then accelerate
+        //3. if not in decelaration range and max velacity - no velocity change
+
+        let target_acceleration = {
+            //are we going up?
+            let going_up = location < (next_floor as f64) * floor_height;
+
+            //Do not exceed velocity
+            // if velocity.abs() >=5.0 {
+            //     if (going_up && v)
+            // }
+
+        };
+
         //5.4 Print realtime stats
 
         //Sleep a little
