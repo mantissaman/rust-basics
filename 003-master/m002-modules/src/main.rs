@@ -1,5 +1,8 @@
-mod foo;
+mod core;
+use crate::core::Dir;
 
+//file based module
+mod foo;
 use crate::foo::Bar;
 
 //Nested modules
@@ -15,4 +18,6 @@ fn main() {
     let eatable = Cake;
     println!("Hello, world - {:?}", eatable);
     let _ = Bar::init();
+    core::do_core();
+    Dir::init();
 }
