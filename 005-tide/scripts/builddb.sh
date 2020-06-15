@@ -4,7 +4,7 @@ if [[ -z "$POSTGRES_USER" ]]; then
     export POSTGRES_USER=postgres
 fi
 if [[ -z "$POSTGRES_PASSWORD" ]]; then
-    export POSTGRES_PASSWORD='pa55word'
+    export POSTGRES_PASSWORD='postgres'
 fi
 if [[ -z "$POSTGRES_DB" ]]; then
     export POSTGRES_DB=postgres
