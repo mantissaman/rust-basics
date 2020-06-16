@@ -3,12 +3,13 @@ authors = ["Atul Sharma <asharma@sw-at.com>"]
 edition = "2018"
 name = "witter-backend"
 version = "0.1.0"
-
 [dependencies]
+assert_json_diff = "*"
 chrono = "0.4.11"
 dotenv = "0.15.0"
 futures = "*"
 http-service = "0.5.0"
+http_service_mock = "*"
 log = "0.4.8"
 pretty_env_logger = "0.4.0"
 regex = "1"
@@ -34,5 +35,4 @@ features = ["runtime-async-std", "macros", "chrono", "json", "postgres", "uuid"]
 version = "0.3.5"
 
 [dev-dependencies]
-http-service-mock = "0.5.0"
 http-types = "2.2.0"

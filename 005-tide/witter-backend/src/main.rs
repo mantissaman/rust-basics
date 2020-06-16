@@ -10,19 +10,18 @@ use serde_json::{Map, Value};
 
 
 #[async_std::main]
-async fn main() ->Result<(),Error> {
+async fn main() {
     dotenv::dotenv().ok();
     pretty_env_logger::init();
 
-    let app = server().await?;
-    app.listen("127.0.0.1:8080").await?;
+    let app = server().await;
+    app.listen("127.0.0.1:8080").await.unwrap();
 
-    Ok(())
 }
 
-async fn server() -> Result<Server<State>,Error>  {
-    let db_url = std::env::var("DATABASE_URL")?;
-    let db_pool:PgPool = Pool::new(&db_url).await?;
+async fn server() -> Server<State>  {
+    let db_url = std::env::var("DATABASE_URL").unwrap();
+    let db_pool:PgPool = Pool::new(&db_url).await.unwrap();
     let mut app:Server<State> = Server::with_state(State{db_pool});
 
     app.at("/").get(|req: Request<State>| async move { 
@@ -41,7 +40,7 @@ async fn server() -> Result<Server<State>,Error>  {
         res.set_body(Body::from_json(&json)?);
         Ok(res)
     });
-    Ok(app)
+    app
 }
 
 #[derive(Debug)]
@@ -59,7 +58,7 @@ enum Error{
     IoError(#[from] std::io::Error),
 
     #[error(transparent)]
-    VarError(#[from] std::env::VarError),
+    VarError(#[from] std::env::VarError)
 }
 
 
@@ -67,54 +66,33 @@ enum Error{
 mod test {
     #[allow(unused_imports)]
     use super::*;
-    use http_service::{HttpService,Response};
-    use futures::{executor::block_on, prelude::*};
-    use http_types::{Method, Request, Url};
+    use http_service::Response;
+    use http_service_mock::{make_server, TestBackend};
+    use serde::de::DeserializeOwned;
+    use serde_json::json;
+    use tide::server::Service;
 
-    #[async_std::test]
-    async fn a_test(){
 
+
+    pub struct TestApp {
+        pub server: TestBackend<Service<State>>
+    }
+
+    impl TestApp {
+        pub fn new() -> Self {
+            let app = server();
+            let server = make_server(app.into_http_service()).unwrap();
+            Self {
+                server
+            }
+        }
     }
 
     #[async_std::test]
     async fn nested(){
-        let server =  server().await.unwrap();
-        let mut server = make_server(server).unwrap();
-
-        let req = Request::new(
-            Method::Get,
-            Url::parse("http://example.com/").unwrap(),
-        );
-        let res = server.simulate(req).unwrap();
-        assert_eq!(res.status(), "200");
+        let server =  server().await;
+        let mut server = make_server(server);       
     }
 
-    pub fn make_server<T: HttpService>(service: T) -> Result<TestBackend<T>, <T::ConnectionFuture as TryFuture>::Error>{
-        TestBackend::wrap(service)
-    }
-
-    #[derive(Debug)]
-    pub struct TestBackend<T: HttpService>{
-        service: T,
-        connection: T::Connection,
-    }
-
-    impl<T: HttpService> TestBackend<T>{
-        fn wrap(service: T) -> Result<Self, <T::ConnectionFuture as TryFuture>::Error>{
-            let connection = block_on(service.connect().into_future())?;
-            Ok(Self {
-                service,
-                connection,
-            })
-        }
-
-        pub fn simulate(&mut self, req:Request) -> Result<Response, <T::ResponseFuture as TryFuture>::Error>{
-            block_on(
-                self.service
-                .respond(self.connection.clone(), req)
-                .into_future()
-            )
-        }
-    }
-
+    
 }
