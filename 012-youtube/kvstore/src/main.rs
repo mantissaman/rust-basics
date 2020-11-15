@@ -14,28 +14,23 @@ fn main() {
     let database = Database::new().expect("Database::new() crashed");
 }
 
+#[derive(Debug)]
 struct Database {
     map: HashMap<String, String>,
 }
 
 impl Database {
     fn new() -> Result<Self, std::io::Error> {
+        let mut map = HashMap::new();
         // read kv.db
-        // let c = match std::fs::read_to_string("kv.db"){
-        //     Ok(contents) => contents,
-        //     Err(error) => {
-        //         return Err(error);
-        //     }
-        // };
-        // Equivalent code below - bubble error
-        let contents = std::fs::read_to_string("kv.db")?;
-        
-
-        // parse string
-
-        // populate map
-        Ok(Database {
-            map: HashMap::new(),
-        })
+        let contents = std::fs::read_to_string("kv.db")?; 
+        // parse string and populate map
+        for line in contents.lines() {
+            let mut chunks = line.splitn(2,'\t');
+            let key = chunks.next().expect("No key!");
+            let value = chunks.next().expect("No value!");
+            map.insert(key.to_owned(), value.to_owned());
+        }
+        Ok(Database { map })
     }
 }
